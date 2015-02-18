@@ -81,5 +81,5 @@ def main(method='reboot'):
 
 
 if __name__ == '__main__':
-    sys.exit(reboot_main())
+    sys.exit(main())
 
