@@ -37,7 +37,7 @@ class Reboot(script_helper.Script):
         else:
             return False
 
-    def run(self, args):
+    def run(self, args, method='reboot'):
         for name in args.server:
             server = clusto.get(name)
             if not server:
@@ -57,10 +57,19 @@ class Reboot(script_helper.Script):
             kwargs = {}
             if args.method is not None:
                 kwargs['method'] = args.method
-            server.reboot(**kwargs)
+            method = getattr(server, method)
+            method(**kwargs)
 
 
-def main():
+def main_on():
+    main('set_power_on')
+
+
+def main_off():
+    main('set_power_off')
+
+
+def main(method='reboot'):
     reboot = Reboot()
     parent_parser = script_helper.setup_base_parser()
     this_parser = argparse.ArgumentParser(parents=[parent_parser],
@@ -68,9 +77,9 @@ def main():
     reboot._add_arguments(this_parser)
     args = this_parser.parse_args()
     reboot.init_script(args=args, logger=script_helper.get_logger(args.loglevel))
-    return(reboot.run(args))
+    return(reboot.run(args, method=method))
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(reboot_main())
 
